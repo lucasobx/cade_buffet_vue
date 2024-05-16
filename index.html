@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Cadê Buffet</title>
+</head>
+<body>
+  <div id="app">
+    <h1>Cadê Buffet</h1>
+
+    <input type="text" v-model="searchText" placeholder="Pesquisar Buffet">
+
+    <div v-if="listBuffets.length <= 0">
+      Nenhum buffet encontrado!
+    </div>
+
+    <ul>
+      <li v-for="item in listBuffets" :key="item.id">
+        <address>
+          <strong>{{item.brand_name}}</strong>
+          <br>{{item.city}}, {{item.state}}
+        </address>
+      </li>
+    </ul>
+  </div>
+  <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
+  <script src="main.js"></script>
+</body>
+</html>
