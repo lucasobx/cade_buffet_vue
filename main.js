@@ -1,4 +1,4 @@
-const apiURL = 'http://localhost:3000';
+const apiURL = 'http://127.0.0.1:3000';
 
 const app = Vue.createApp({
   data(){
@@ -23,19 +23,23 @@ const app = Vue.createApp({
   },
 
   methods:{
-    async fetchBuffets(){
-      try{
+    async fetchBuffets() {
+      try {
         const searchQuery = this.searchText ? `?search=${this.searchText}` : '';
         let response = await fetch(`${apiURL}/api/v1/buffets${searchQuery}`);
         let data = await response.json();
-    
+
         this.listBuffets = data.map(item => ({
           id: item.id,
           brand_name: item.brand_name,
           city: item.city,
           state: item.state
         }));
-      } catch (error){
+
+        if (this.searchText) {
+          this.selectedBuffet = null;
+        }
+      } catch (error) {
         console.error('Erro ao buscar buffets:', error);
       }
     },
@@ -66,6 +70,9 @@ const app = Vue.createApp({
     showAvailabilityForm(eventTypeId) {
       this.selectedEventTypeId = eventTypeId;
       this.showForm = true;
+      this.availabilityResponse = null;
+      const availabilityModal = new bootstrap.Modal(document.getElementById('availabilityModal'));
+      availabilityModal.show();
     },
 
     async checkAvailability() {

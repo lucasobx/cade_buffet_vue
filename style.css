@@ -1,0 +1,20 @@
+body {
+  background-color: #111;
+  color: #fff;
+}
+
+a {
+  text-decoration: none;
+}
+
+a:hover {
+  text-decoration: underline;
+}
+
+.card-title {
+  cursor: pointer;
+}
+
+.card-title:hover {
+  text-decoration: underline;
+}
