@@ -10,19 +10,79 @@
     <h1>Cadê Buffet</h1>
 
     <input type="text" v-model="searchText" placeholder="Pesquisar Buffet">
+    <div v-if="!selectedBuffet">
+      <div v-if="listBuffets.length <= 0">
+        Nenhum buffet encontrado!
+      </div>
 
-    <div v-if="listBuffets.length <= 0">
-      Nenhum buffet encontrado!
+      <ul>
+        <li v-for="item in listBuffets" :key="item.id">
+          <address>
+            <strong @click="fetchBuffetDetails(item.id)" style="cursor: pointer;">{{item.brand_name}}</strong>
+            <br>{{item.city}}, {{item.state}}
+          </address>
+        </li>
+      </ul>
     </div>
 
-    <ul>
-      <li v-for="item in listBuffets" :key="item.id">
-        <address>
-          <strong>{{item.brand_name}}</strong>
-          <br>{{item.city}}, {{item.state}}
-        </address>
-      </li>
-    </ul>
+    <div v-if="selectedBuffet">
+      <h2>Detalhes do Buffet</h2>
+      <p><strong>Nome:</strong> {{ selectedBuffet.brand_name }}</p>
+      <p><strong>Telefone:</strong> {{ selectedBuffet.phone_number }}</p>
+      <p><strong>Email:</strong> {{ selectedBuffet.email }}</p>
+      <p><strong>Endereço:</strong> {{ selectedBuffet.address }}</p>
+      <p><strong>Bairro:</strong> {{ selectedBuffet.neighborhood }}</p>
+      <p><strong>Cidade:</strong> {{ selectedBuffet.city }}</p>
+      <p><strong>Estado:</strong> {{ selectedBuffet.state }}</p>
+      <p><strong>CEP:</strong> {{ selectedBuffet.postal_code }}</p>
+      <p><strong>Descrição:</strong> {{ selectedBuffet.description }}</p>
+      <h3>Métodos de Pagamento</h3>
+      <ul>
+        <li v-for="method in selectedBuffet.payment_methods" :key="method.name">
+          {{ method.name }}
+        </li>
+      </ul>
+      <h3>Eventos</h3>
+      <ul>
+        <li v-for="eventType in selectedBuffet.event_types" :key="eventType.id">
+          <strong>{{ eventType.name }}</strong> - {{ eventType.description }}
+          <br><strong>Min. Convidados:</strong> {{ eventType.min_guests }}
+          <br><strong>Max. Convidados:</strong> {{ eventType.max_guests }}
+          <br><strong>Duração:</strong> {{ eventType.duration }} minutos
+          <br><strong>Menu:</strong> {{ eventType.menu_details }}
+          <br><strong>Opção de Álcool:</strong> {{ eventType.alcohol_option ? 'Sim' : 'Não' }}
+          <br><strong>Opção de Decoração:</strong> {{ eventType.decoration_option ? 'Sim' : 'Não' }}
+          <br><strong>Serviço de Estacionamento:</strong> {{ eventType.parking_service_option ? 'Sim' : 'Não' }}
+          <br><strong>Opção de Localização:</strong> {{ eventType.location_option ? 'Sim' : 'Não' }}
+          <br><strong>Preço Base:</strong> R$ {{ eventType.base_price }}
+          <br><strong>Preço por Convidado Extra:</strong> R$ {{ eventType.extra_guest }}
+          <br><strong>Preço por Hora Extra:</strong> R$ {{ eventType.extra_hour }}
+          <br><strong>Preço Base (Finais de Semana):</strong> R$ {{ eventType.we_base_price }}
+          <br><strong>Preço por Convidado Extra (Finais de Semana):</strong> R$ {{ eventType.we_extra_guest }}
+          <br><strong>Preço por Hora Extra (Finais de Semana):</strong> R$ {{ eventType.we_extra_hour }}
+          <p><button @click="showAvailabilityForm(eventType.id)">Consultar Disponibilidade</button></p>
+        </li>
+      </ul>
+    </div>
+
+    <div v-if="showForm">
+      <h3>Consultar Disponibilidade</h3>
+      <form @submit.prevent="checkAvailability">
+        <label for="event_date">Data do Evento:</label>
+        <input type="date" v-model="availabilityDate" required>
+        <label for="guest_number">Número de Convidados:</label>
+        <input type="number" v-model="guestNumber" required>
+        <button type="submit">Verificar</button>
+      </form>
+    </div>
+
+    <div v-if="availabilityResponse">
+      <h3>Resultado da Consulta</h3>
+      <p v-if="availabilityResponse.estimated_price"><strong>Preço Estimado:</strong> R${{ availabilityResponse.estimated_price }}</p>
+      <p v-if="availabilityResponse.error"><strong>Erro:</strong> {{ availabilityResponse.error }}</p>
+    </div>
+
+    <button @click="clearSelectedBuffet">Voltar</button>
   </div>
   <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
   <script src="main.js"></script>

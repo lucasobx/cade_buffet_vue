@@ -4,7 +4,13 @@ const app = Vue.createApp({
   data(){
     return{
       searchText: '',
-      listBuffets: []
+      listBuffets: [],
+      selectedBuffet: null,
+      showForm: false,
+      selectedEventTypeId: null,
+      availabilityDate: '',
+      guestNumber: '',
+      availabilityResponse: null
     }
   },
 
@@ -32,7 +38,46 @@ const app = Vue.createApp({
       } catch (error){
         console.error('Erro ao buscar buffets:', error);
       }
-    }    
+    },
+    
+    async fetchBuffetDetails(buffetId){
+      try{
+        let response = await fetch(`${apiURL}/api/v1/buffets/${buffetId}`);
+        let buffetData = await response.json();
+        
+        let eventResponse = await fetch(`${apiURL}/api/v1/buffets/${buffetId}/event_types`);
+        let eventTypes = await eventResponse.json();
+
+        this.selectedBuffet = {
+          ...buffetData,
+          event_types: eventTypes
+        };
+      } catch (error){
+        console.error('Erro ao buscar detalhes do buffet:', error);
+      }
+    },
+
+    clearSelectedBuffet() {
+      this.selectedBuffet = null;
+      this.showForm = false;
+      this.availabilityResponse = null;
+    },
+
+    showAvailabilityForm(eventTypeId) {
+      this.selectedEventTypeId = eventTypeId;
+      this.showForm = true;
+    },
+
+    async checkAvailability() {
+      try {
+        let response = await fetch(`${apiURL}/api/v1/event_types/${this.selectedEventTypeId}?event_date=${this.availabilityDate}&guest_number=${this.guestNumber}`);
+        let data = await response.json();
+
+        this.availabilityResponse = data;
+      } catch (error) {
+        console.error('Erro ao consultar disponibilidade:', error);
+      }
+    }
   }
 })
 
